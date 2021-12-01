@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from .models import Recipe, User
+from .models import Recipe
 
 
 class RecipeFilter(filters.FilterSet):
@@ -28,5 +28,3 @@ class RecipeFilter(filters.FilterSet):
             return queryset.filter(favorite__user=self.request.user)
         if not value:
             return queryset.all()
-
-

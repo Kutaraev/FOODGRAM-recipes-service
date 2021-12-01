@@ -43,12 +43,9 @@ class Ingredient(models.Model):
     measurement_unit = models.CharField(max_length=100)
 
     class Meta:
-        ordering = ['-id']
+        ordering = ['id']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-
-    def __str__(self):
-        return self.name
 
 
 class Amount(models.Model):
@@ -65,6 +62,7 @@ class Amount(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Количество ингредиентов в рецепте'
+        verbose_name_plural = 'Количество ингредиентов в рецепте'
 
 
 class Tag(models.Model):
@@ -74,6 +72,8 @@ class Tag(models.Model):
     slug = models.SlugField(unique=True)
 
     class Meta:
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
         constraints = [
             models.UniqueConstraint(
                 fields=['name', 'color', 'slug'],
@@ -97,6 +97,8 @@ class Follow(models.Model):
     )
 
     class Meta:
+        verbose_name = 'Подписки'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'following'],
@@ -117,6 +119,7 @@ class Favorite(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Избранное'
+        verbose_name_plural = 'Избранное'
         constraints = [
             models.UniqueConstraint(fields=['recipe', 'user'],
                                     name='unique_favorite')
@@ -135,8 +138,8 @@ class ShopList(models.Model):
     class Meta:
         ordering = ['-id']
         verbose_name = 'Продуктовая корзина'
+        verbose_name_plural = 'Продуктовая корзина'
         constraints = [
             models.UniqueConstraint(fields=['recipe', 'user'],
                                     name='unique_product_cart')
         ]
-

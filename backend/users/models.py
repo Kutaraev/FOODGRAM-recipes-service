@@ -3,6 +3,7 @@ from django.db import models
 
 
 class MyUserManager(BaseUserManager):
+    """Менеджер пользователей"""
     def create_user(self,
                     email,
                     username,
@@ -48,6 +49,7 @@ class MyUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    """Кастомная модель пользователя"""
     email = models.EmailField(
         verbose_name='email',
         max_length=100,

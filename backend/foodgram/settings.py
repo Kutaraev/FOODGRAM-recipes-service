@@ -1,8 +1,10 @@
+import os
 from pathlib import Path
 
-import os
 import environ
 
+env = environ.Env()
+environ.Env.read_env()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,7 +16,7 @@ SECRET_KEY = ('django-insecure-sb%3+zsmt5&58' +
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['web', '84.201.138.107',]
+ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -34,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,29 +70,27 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'postgresql',
-        'PORT': '5432',
-    }
-} 
+    'default': env.db()
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.'
+        'UserAttributeSimilarityValidator',
+     },
+    {
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -114,7 +115,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ],
 
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ]
 }
 
 

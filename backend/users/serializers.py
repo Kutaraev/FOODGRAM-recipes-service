@@ -4,6 +4,7 @@ from users.models import User
 
 
 class CustomUserSerializer(UserSerializer):
+    """Сериализатор для пользователей"""
     class Meta:
         model = User
         fields = ('email',
@@ -20,15 +21,3 @@ class CustomUserSerializer(UserSerializer):
             user.set_password(validated_data["password"])
             user.save()
             return user
-
-
-# Возможно не нужно, так как поля совпадают с CustomUserSerializer
-class FollowUserSerializer(UserSerializer):
-    class Meta:
-        model = User
-        fields = ('email',
-                  'id',
-                  'username',
-                  'first_name',
-                  'last_name',
-                  'is_subscribed')

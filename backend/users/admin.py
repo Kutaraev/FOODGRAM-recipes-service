@@ -9,6 +9,5 @@ class CustomUserAdmin(admin.ModelAdmin):
     search_fields = ['email', 'username']
     empty_value_display = "-пусто-"
 
+
 admin.site.register(User, CustomUserAdmin)
-
-

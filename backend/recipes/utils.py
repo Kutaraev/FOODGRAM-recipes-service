@@ -1,4 +1,5 @@
 from io import BytesIO
+
 from django.http import HttpResponse
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
@@ -8,6 +9,7 @@ from .serializers import AmountSerializer
 
 
 def from_cart_to_pdf(user):
+    """Преобразование списка покупок в pdf-файл"""
     recipes_in_basket = []
     recipes = ShopList.objects.filter(user=user)
     for i in recipes:

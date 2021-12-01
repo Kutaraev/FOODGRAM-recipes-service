@@ -1,38 +1,25 @@
-
-from io import BytesIO
-
-from django.http import HttpResponse
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfgen import canvas
-from rest_framework import viewsets, status
-from rest_framework.decorators import action, api_view
-from rest_framework.response import Response
-
-from rest_framework.decorators import action
-
-from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
-from .filters import RecipeFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from users.models import User
 
-from rest_framework.permissions import IsAuthenticated
-
-from .models import Amount, Favorite, Follow, Ingredient, Recipe, Tag, ShopList
+from .filters import RecipeFilter
+from .models import Favorite, Follow, Ingredient, Recipe, ShopList, Tag
 from .pagination import CustomPagination
-from .permissions import (IngredientPermission, IsAuthenticatedPermission,
-                          RecipePermission)
-from .serializers import (AmountSerializer, FavoriteSerializer,
-                          FollowSerializer, IngredientSerializer,
-                          RecipeSerializer, ShoppingSerializer, TagSerializer, MinRecipeSerializer)
-
+from .permissions import IsAuthenticatedPermission, RecipePermission
+from .serializers import (FavoriteSerializer, FollowSerializer,
+                          IngredientSerializer, MinRecipeSerializer,
+                          RecipeSerializer, TagSerializer)
 from .utils import from_cart_to_pdf
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    # permission_classes = [IngredientPermission]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['name', ]
 
@@ -53,7 +40,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = Recipe(id=pk)
         if request.method == 'GET':
             if Favorite.objects.filter(user=user, recipe=recipe).exists():
-                return Response({'errors' : 'Данный рецепт уже есть в избранном'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'errors': 'Данный рецепт уже есть в избранном'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             Favorite.objects.create(user=user, recipe=recipe)
             serializer = MinRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -61,7 +51,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if Favorite.objects.filter(user=user, recipe=recipe).exists():
                 Favorite.objects.get(user=user, recipe=recipe).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'errors' : 'Данный рецепт уже удален из избранного'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'errors': 'Данный рецепт уже удален из избранного'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return None
 
     @action(detail=True, methods=['get', 'delete'],
@@ -72,7 +65,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe = Recipe(id=pk)
         if request.method == 'GET':
             if ShopList.objects.filter(user=user, recipe=recipe).exists():
-                return Response({'errors' : 'Данный рецепт уже есть в списке покупок'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {'errors': 'Данный рецепт уже есть в списке покупок'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
             ShopList.objects.create(user=user, recipe=recipe)
             serializer = MinRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -80,7 +76,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
             if ShopList.objects.filter(user=user, recipe=recipe).exists():
                 ShopList.objects.get(user=user, recipe=recipe).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
-            return Response({'errors' : 'Данный рецепт уже удален из списка покупок'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'errors': 'Данный рецепт уже удален из списка покупок'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         return None
 
     @action(detail=False, methods=['get', 'delete'],
@@ -88,8 +87,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         user = self.request.user
         return from_cart_to_pdf(user)
-
-
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -154,4 +151,3 @@ def subscribe(request, pk):
             'errors': 'Вы не подписаны на данного пользователя'
         }, status=status.HTTP_400_BAD_REQUEST)
     return False
-

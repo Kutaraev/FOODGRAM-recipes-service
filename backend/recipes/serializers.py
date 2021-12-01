@@ -1,19 +1,20 @@
-from rest_framework import serializers
 from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
 
-from .models import Amount, Favorite, Follow, Ingredient, Recipe, Tag, ShopList
+from .models import Amount, Favorite, Follow, Ingredient, Recipe, ShopList, Tag
 
 
 class TagSerializer(serializers.ModelSerializer):
-
+    """Сериализатор тегов"""
     class Meta:
         model = Tag
         fields = ('id', 'name', 'color', 'slug')
 
 
 class AmountSerializer(serializers.HyperlinkedModelSerializer):
+    """Сериализатор количества ингредиентов"""
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -26,13 +27,14 @@ class AmountSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-
+    """Общий сериализатор для ингредиентов"""
     class Meta:
         model = Ingredient
         fields = ('id', 'name', 'measurement_unit')
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор рецептов"""
     image = Base64ImageField()
     author = CustomUserSerializer(read_only=True)
     ingredients = AmountSerializer(
@@ -40,7 +42,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     )
     tags = TagSerializer(read_only=True, many=True)
     is_in_shopping_cart = serializers.SerializerMethodField()
-    is_favorited = serializers.SerializerMethodField(read_only=True, default=False)
+    is_favorited = serializers.SerializerMethodField(
+        read_only=True, default=False
+    )
 
     class Meta:
         model = Recipe
@@ -75,21 +79,40 @@ class RecipeSerializer(serializers.ModelSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return ShopList.objects.filter(recipe=obj, user=user
-        ).exists()
+        return ShopList.objects.filter(recipe=obj, user=user).exists()
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Favorite.objects.filter(recipe=obj, user=user
-        ).exists()
+        return Favorite.objects.filter(recipe=obj, user=user).exists()
 
-
+    def validate(self, data):
+        tags = self.initial_data.get("tags")
+        if not tags:
+            raise serializers.ValidationError(
+                'Добавьте как минимум один тег'
+            )
+        ingredients = self.initial_data.get("ingredients")
+        if not ingredients:
+            raise serializers.ValidationError(
+                "Добавьте ингредиенты для рецепта"
+            )
+        for ingredient in ingredients:
+            if int(ingredient["amount"]) <= 0:
+                raise serializers.ValidationError(
+                    "Кол-во ингредиента должно быть больше 0"
+                )
+        cooking_time = self.initial_data.get("cooking_time")
+        if int(cooking_time) <= 0:
+            raise serializers.ValidationError(
+                "Убедитесь, что время приготовления больше нуля"
+            )
+        return data
 
 
 class UserRecipeSerializer(serializers.ModelSerializer):
-
+    """Сериализатор для списка рецептов конкретного пользователя"""
     class Meta:
         model = Recipe
         fields = ('id',
@@ -99,6 +122,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    """Сериализатор подписок"""
     email = serializers.ReadOnlyField(source='following.email')
     id = serializers.ReadOnlyField(source='following.id')
     username = serializers.ReadOnlyField(source='following.username')
@@ -128,6 +152,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор избранного"""
     id = serializers.ReadOnlyField(source='recipe.id')
     name = serializers.ReadOnlyField(source='recipe.name')
     image = serializers.ReadOnlyField(source='recipe.image')
@@ -139,17 +164,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
                   'name',
                   'image',
                   'cooking_time')
-
-
-class ShoppingSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Recipe
-        fields = ('id',
-                  'name',
-                  'image',
-                  'cooking_time',
-                  'is_in_shopping_cart')
 
 
 class MinRecipeSerializer(serializers.ModelSerializer):
