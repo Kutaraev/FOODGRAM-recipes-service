@@ -2,12 +2,11 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from .views import (FavoriteViewSet, FollowersViewSet, IngredientViewSet,
-                    RecipeViewSet, ShoppingListViewSet, TagViewSet, favorite,
-                    hello)
+                    RecipeViewSet, TagViewSet, subscribe)
 
 router = SimpleRouter()
 router.register('ingredients', IngredientViewSet)
-router.register('recipes', RecipeViewSet)
+router.register(r'recipes', RecipeViewSet, basename='recipes')
 router.register('tags', TagViewSet)
 
 # Переделать через роутер
@@ -25,14 +24,6 @@ router.register(
 )
 
 urlpatterns = [
-    path(r"users/<int:pk>/subscribe/", hello),
-    path(r"recipes/<int:pk>/favorite/", favorite),
-    path(r"recipes/<int:pk>/shopping_cart/",
-         ShoppingListViewSet.as_view(
-            {"get": "shopping_cart_add",
-             "delete": "shopping_cart_del"})
-         ),
-    path("recipes/download_shopping_cart/",
-         ShoppingListViewSet.as_view({"get": "download_shopping_list"})),
+    path(r"users/<int:pk>/subscribe/", subscribe),
     path('', include(router.urls)),
 ]

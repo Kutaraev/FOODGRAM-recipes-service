@@ -1,8 +1,9 @@
 from rest_framework import serializers
+from drf_extra_fields.fields import Base64ImageField
 
 from users.serializers import CustomUserSerializer
 
-from .models import Amount, Favorite, Follow, Ingredient, Recipe, Tag
+from .models import Amount, Favorite, Follow, Ingredient, Recipe, Tag, ShopList
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -32,11 +33,14 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    image = Base64ImageField()
     author = CustomUserSerializer(read_only=True)
     ingredients = AmountSerializer(
         source='amount_set', many=True, read_only=True
     )
     tags = TagSerializer(read_only=True, many=True)
+    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.SerializerMethodField(read_only=True, default=False)
 
     class Meta:
         model = Recipe
@@ -66,6 +70,22 @@ class RecipeSerializer(serializers.ModelSerializer):
             )
         recipe.tags.add(*tags)
         return recipe
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return ShopList.objects.filter(recipe=obj, user=user
+        ).exists()
+
+    def get_is_favorited(self, obj):
+        user = self.context.get('request').user
+        if user.is_anonymous:
+            return False
+        return Favorite.objects.filter(recipe=obj, user=user
+        ).exists()
+
+
 
 
 class UserRecipeSerializer(serializers.ModelSerializer):
@@ -130,3 +150,13 @@ class ShoppingSerializer(serializers.ModelSerializer):
                   'image',
                   'cooking_time',
                   'is_in_shopping_cart')
+
+
+class MinRecipeSerializer(serializers.ModelSerializer):
+    """Сериализатор выдает только необходимые поля."""
+    image = Base64ImageField()
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')

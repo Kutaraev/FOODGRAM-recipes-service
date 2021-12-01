@@ -1,5 +1,23 @@
-version: '3.3'
+version: '3.8'
 services:
+  postgresql:
+    env_file:
+      - ../backend/.env
+    image: postgres:12.4
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data/
+    restart: always
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    volumes:
+      - static_data:/code/static/
+      - media_data:/code/media/
+    restart: always
+    depends_on:
+      - postgresql
 
   frontend:
     build:
@@ -7,6 +25,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../frontend/:/app/result_build/
+
   nginx:
     image: nginx:1.19.3
     ports:
@@ -16,3 +35,14 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
+      - static_data:/static/
+      - media_data:/media/
+    restart: always
+    depends_on:
+      - backend
+      - frontend
+
+volumes:
+  static_data:
+  media_data:
+  postgresql_data:
