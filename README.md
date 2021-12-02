@@ -42,3 +42,21 @@ docker-compose exec backend python manage.py createsuperuser
 - фамилию
 - пароль
 Теперь можно запустить docker-compose, зайти на адрес `http://127.0.0.1/admin/`, залогиниться и работать с админкой Django.
+
+## API
+Перечень эндпоинтов, а твкже формат и вид данных находятся по адресу `http://127.0.0.1/api/docs/`
+
+## Элементы интерфейса
+В данном разделе показаны базовые элементы интерфейса сервиса "Продуктовый помощник"
+### Окно входа на сайт
+![логин](https://i.postimg.cc/LXLWTfVj/image.png)
+### Форма регистрации нового пользователя
+![регистрация](https://i.postimg.cc/Prt7WCv8/image.png)
+### Главная страница с рецептами
+![главная страница](https://i.postimg.cc/k5kZKwWn/image.png)
+### Окно создания рецепта
+![создание рецепта](https://i.postimg.cc/jq69nH2b/image.png)
+### Страница подписок
+![подписки](https://i.postimg.cc/PJMRGj9x/image.png)
+### Пример выгруженного списка покупок
+![список покупок](https://i.postimg.cc/d3FxS1Wp/image.png)
