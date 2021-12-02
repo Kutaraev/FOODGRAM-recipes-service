@@ -75,6 +75,24 @@ class RecipeSerializer(serializers.ModelSerializer):
         recipe.tags.add(*tags)
         return recipe
 
+    def update(self, recipe, validated_data):
+        if "ingredients" in self.initial_data:
+            ingredients = validated_data.pop("ingredients")
+            recipe.ingredients.clear()
+            self.update_ingredients(ingredients, recipe)
+        if "tags" in self.initial_data:
+            tags = validated_data.pop("tags")
+            recipe.tags.set(tags)
+        return super().update(recipe, validated_data)
+
+    def update_ingredients(self, ingredients, recipe):
+        for ingredient in ingredients:
+            Amount.objects.create(
+                recipe=recipe,
+                ingredient_id=ingredient.get("id"),
+                amount=ingredient.get("amount"),
+            )
+
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
         if user.is_anonymous:
@@ -93,6 +111,7 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Добавьте как минимум один тег'
             )
+        data["tags"] = tags
         ingredients = self.initial_data.get("ingredients")
         if not ingredients:
             raise serializers.ValidationError(
@@ -103,6 +122,7 @@ class RecipeSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     "Кол-во ингредиента должно быть больше 0"
                 )
+        data["ingredients"] = ingredients
         cooking_time = self.initial_data.get("cooking_time")
         if int(cooking_time) <= 0:
             raise serializers.ValidationError(

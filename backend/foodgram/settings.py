@@ -3,8 +3,8 @@ from pathlib import Path
 
 import environ
 
-env = environ.Env()
-environ.Env.read_env()
+# env = environ.Env()
+# environ.Env.read_env()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -16,7 +16,9 @@ SECRET_KEY = ('django-insecure-sb%3+zsmt5&58' +
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['web', '84.201.138.107',]
+
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -69,9 +71,20 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
+# DATABASES = {
+#     'default': env.db()
+# }
+
 DATABASES = {
-    'default': env.db()
-}
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'postgresql',
+        'PORT': '5432',
+    }
+} 
 
 
 AUTH_PASSWORD_VALIDATORS = [
