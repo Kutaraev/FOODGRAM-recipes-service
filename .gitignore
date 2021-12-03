@@ -133,3 +133,4 @@ dmypy.json
 
 # static
 static/
+backend/static/
