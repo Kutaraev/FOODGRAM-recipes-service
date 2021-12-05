@@ -9,17 +9,17 @@ router.register('ingredients', IngredientViewSet)
 router.register(r'recipes', RecipeViewSet, basename='recipes')
 router.register('tags', TagViewSet)
 router.register(
-    "users/subscriptions",
+    'users/subscriptions',
     FollowersViewSet,
-    basename="Followers"
+    basename='Followers'
 )
 router.register(
-    "users/favorites",
+    'users/favorites',
     FavoriteViewSet,
-    basename="Favorites"
+    basename='Favorites'
 )
 
 urlpatterns = [
-    path(r"users/<int:pk>/subscribe/", subscribe),
+    path(r'users/<int:pk>/subscribe/', subscribe),
     path('', include(router.urls)),
 ]

@@ -55,31 +55,37 @@ class CustomUserManager(BaseUserManager):
 class User(AbstractBaseUser):
     """Кастомная модель пользователя"""
     email = models.EmailField(
-        verbose_name='email',
+        verbose_name='Email',
         max_length=100,
         unique=True
     )
     username = models.CharField(max_length=50, unique=True)
     date_joined = models.DateTimeField(
-        verbose_name='date_joined',
+        verbose_name='Дата регистрации',
         auto_now_add=True
     )
     last_login = models.DateTimeField(
-        verbose_name='last_login',
+        verbose_name='Последнее посещение',
         auto_now_add=True
     )
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-    is_superuser = models.BooleanField(default=False)
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    is_subscribed = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False, verbose_name='Админ')
+    is_active = models.BooleanField(default=True, verbose_name='Активен')
+    is_staff = models.BooleanField(default=False, verbose_name='Команда')
+    is_superuser = models.BooleanField(default=False,
+                                       verbose_name='Супер-пользователь')
+    first_name = models.CharField(max_length=50, verbose_name='Имя')
+    last_name = models.CharField(max_length=50, verbose_name='Фамилия')
+    is_subscribed = models.BooleanField(default=False,
+                                        verbose_name='Подписчик')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]
 
     objects = CustomUserManager()
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
         return self.email

@@ -19,11 +19,11 @@ def from_cart_to_pdf(user):
 
     shopping_list = {}
     for i in serializer.data:
-        if i["name"] not in shopping_list:
-            shopping_list[i["name"]] = (i["amount"], i["measurement_unit"])
+        if i['name'] not in shopping_list:
+            shopping_list[i['name']] = (i['amount'], i['measurement_unit'])
         else:
-            rez = shopping_list[i["name"]][0] + i["amount"]
-            shopping_list[i["name"]] = (rez, i["measurement_unit"])
+            rez = shopping_list[i['name']][0] + i['amount']
+            shopping_list[i['name']] = (rez, i['measurement_unit'])
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = (
@@ -78,7 +78,7 @@ def from_cart_to_pdf(user):
 
     counter = 0
     y_coord = 780
-    c.drawString(25, 800, "Список покупок:")
+    c.drawString(25, 800, 'Список покупок:')
     for i in shopping_list:
         counter += 1
         y_coord -= 30
