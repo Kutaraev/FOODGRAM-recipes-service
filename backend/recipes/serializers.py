@@ -2,7 +2,6 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
-
 from .models import Amount, Favorite, Follow, Ingredient, Recipe, ShopList, Tag
 
 
@@ -59,20 +58,23 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'text',
                   'cooking_time',)
 
+    def update_ingredients(self, ingredients, recipe):
+        for ingredient in ingredients:
+            Amount.objects.create(
+                recipe=recipe,
+                ingredient_id=ingredient.get('id'),
+                amount=ingredient.get('amount'),
+            )
+
     def create(self, validated_data):
-        ingredients = self.initial_data['ingredients']
-        tags = self.initial_data['tags']
+        ingredients = validated_data.pop('ingredients')
+        tags = validated_data.pop('tags')
         user = self.context['request'].user
         recipe = Recipe.objects.create(
             author=user,
             **validated_data)
-        for ingredient in ingredients:
-            Amount.objects.create(
-                recipe=recipe,
-                ingredient=Ingredient(id=ingredient['id']),
-                amount=ingredient['amount']
-            )
-        recipe.tags.add(*tags)
+        self.update_ingredients(ingredients, recipe)
+        recipe.tags.set(tags)
         return recipe
 
     def update(self, recipe, validated_data):
@@ -84,14 +86,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             tags = validated_data.pop('tags')
             recipe.tags.set(tags)
         return super().update(recipe, validated_data)
-
-    def update_ingredients(self, ingredients, recipe):
-        for ingredient in ingredients:
-            Amount.objects.create(
-                recipe=recipe,
-                ingredient_id=ingredient.get('id'),
-                amount=ingredient.get('amount'),
-            )
 
     def get_is_in_shopping_cart(self, obj):
         user = self.context.get('request').user
@@ -111,17 +105,24 @@ class RecipeSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Добавьте как минимум один тег'
             )
+        if len(tags) != len(set(tags)):
+            raise serializers.ValidationError('Теги должны быть уникальными!')
         data['tags'] = tags
         ingredients = self.initial_data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
                 'Добавьте ингредиенты для рецепта'
             )
+        unique_ingredients = []
         for ingredient in ingredients:
+            ingredient_id=ingredient.get('id'),
             if int(ingredient['amount']) <= 0:
                 raise serializers.ValidationError(
                     'Кол-во ингредиента должно быть больше 0'
                 )
+            unique_ingredients.append(ingredient_id)
+        if len(unique_ingredients) != len(set(unique_ingredients)):
+            raise serializers.ValidationError('Ингредиенты должны быть уникальными!')
         data['ingredients'] = ingredients
         cooking_time = self.initial_data.get('cooking_time')
         if int(cooking_time) <= 0:

@@ -27,8 +27,7 @@ class Recipe(models.Model):
                 1, message='Нельзя прикотовить быстрее, чем за минуту'),),
         verbose_name='Время приготовления')
     image = models.ImageField(verbose_name='Фото')
-    created = models.DateTimeField('date published',
-                                   auto_now_add=True,
+    created = models.DateTimeField(auto_now_add=True,
                                    verbose_name='Дата создания')
 
     class Meta:
@@ -137,10 +136,10 @@ class Favorite(models.Model):
 class ShopList(models.Model):
     """Модель продуктовой корзины"""
     recipe = models.ForeignKey(
-        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт'
+        Recipe, on_delete=models.CASCADE, verbose_name='Рецепт', related_name='shoplist'
      )
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE, verbose_name='Пользователь'
+        User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='shoplist'
     )
 
     class Meta:
@@ -151,3 +150,4 @@ class ShopList(models.Model):
             models.UniqueConstraint(fields=['recipe', 'user'],
                                     name='unique_product_cart')
         ]
+

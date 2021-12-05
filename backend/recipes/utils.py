@@ -1,36 +1,30 @@
 from io import BytesIO
 
+from django.db.models import Sum
 from django.http import HttpResponse
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
 from .models import Amount, ShopList
-from .serializers import AmountSerializer
 
 
 def from_cart_to_pdf(user):
     """Преобразование списка покупок в pdf-файл"""
-    recipes_in_basket = []
-    recipes = ShopList.objects.filter(user=user)
-    for i in recipes:
-        recipes_in_basket.append(i.recipe.id)
-    queryset = Amount.objects.filter(recipe__id__in=recipes_in_basket)
-    serializer = AmountSerializer(queryset, many=True)
-
-    shopping_list = {}
-    for i in serializer.data:
-        if i['name'] not in shopping_list:
-            shopping_list[i['name']] = (i['amount'], i['measurement_unit'])
-        else:
-            rez = shopping_list[i['name']][0] + i['amount']
-            shopping_list[i['name']] = (rez, i['measurement_unit'])
+    # не стал использовать values_list, т.к. изменил вывод списка покупок
+    # и мне кажется, что понятнее, когда идет обращение к ключам словаря values
+    # а не к индексам кортежа values_list
+    shopping_basket = Amount.objects.filter(
+        recipe__shoplist__user=user).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+    ).annotate(amount=Sum('amount')).order_by()
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = (
         'attachment; filename="somefilename.pdf"')
 
     buffer = BytesIO()
-    c = canvas.Canvas(buffer)
+    canvas_page = canvas.Canvas(buffer)
     fname = 'a010013l'
     facename = 'URWGothicL-Book'
     cyrface = pdfmetrics.EmbeddedType1Face(fname+'.afm', fname+'.pfb')
@@ -67,27 +61,28 @@ def from_cart_to_pdf(user):
             'afii10094', 'afii10095', 'afii10096', 'afii10097'
     )
 
-    for i in range(128, 256):
-        cyrenc[i] = cp1251[i-128]
+    for counter in range(128, 256):
+        cyrenc[counter] = cp1251[counter-128]
 
     pdfmetrics.registerEncoding(cyrenc)
     pdfmetrics.registerTypeFace(cyrface)
     pdfmetrics.registerFont(
         pdfmetrics.Font(facename+'1251', facename, 'CP1251'))
-    c.setFont(facename+'1251', 20)
+    canvas_page.setFont(facename+'1251', 20)
 
-    counter = 0
-    y_coord = 780
-    c.drawString(25, 800, 'Список покупок:')
-    for i in shopping_list:
-        counter += 1
+    canvas_page.drawString(60, 800, 'Список покупок')
+    y_coord = 760
+    list_counter = 1
+    for ingredient in shopping_basket:
+        canvas_page.drawString(60, y_coord, text=(
+            f'{list_counter}. {ingredient["ingredient__name"]} - {ingredient["amount"]} '
+            f'{ingredient["ingredient__measurement_unit"]}'
+        ))
         y_coord -= 30
-        string = (str(counter) + '. ' + i + ' - ' +
-                  str(shopping_list[i][0]) + ' ' + shopping_list[i][1])
+        list_counter +=1
+    canvas_page.showPage()
+    canvas_page.save()
 
-        c.drawString(25, y_coord, string)
-    c.showPage()
-    c.save()
 
     pdf = buffer.getvalue()
     buffer.close()

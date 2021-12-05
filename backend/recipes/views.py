@@ -1,7 +1,8 @@
+from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -37,19 +38,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def favorite(self, request, pk=None):
         """Добавить рецепт в избранное."""
         user = request.user
-        recipe = Recipe(id=pk)
         if request.method == 'GET':
-            if Favorite.objects.filter(user=user, recipe=recipe).exists():
+            if Favorite.objects.filter(user=user, recipe_id=pk).exists():
                 return Response(
                     {'errors': 'Данный рецепт уже есть в избранном'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            Favorite.objects.create(user=user, recipe=recipe)
+            Favorite.objects.create(user=user, recipe_id=pk)
+            recipe = get_object_or_404(Recipe, id=pk)
             serializer = MinRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
-            if Favorite.objects.filter(user=user, recipe=recipe).exists():
-                Favorite.objects.get(user=user, recipe=recipe).delete()
+            if Favorite.objects.filter(user=user, recipe_id=pk).exists():
+                Favorite.objects.get(user=user, recipe_id=pk).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': 'Данный рецепт уже удален из избранного'},
@@ -62,19 +63,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def shopping_cart(self, request, pk=None):
         """Добавить рецепт в список покупок."""
         user = request.user
-        recipe = Recipe(id=pk)
         if request.method == 'GET':
-            if ShopList.objects.filter(user=user, recipe=recipe).exists():
+            if ShopList.objects.filter(user=user, recipe_id=pk).exists():
                 return Response(
                     {'errors': 'Данный рецепт уже есть в списке покупок'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            ShopList.objects.create(user=user, recipe=recipe)
+            ShopList.objects.create(user=user, recipe_id=pk)
+            recipe = get_object_or_404(Recipe, id=pk)
             serializer = MinRecipeSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         elif request.method == 'DELETE':
-            if ShopList.objects.filter(user=user, recipe=recipe).exists():
-                ShopList.objects.get(user=user, recipe=recipe).delete()
+            if ShopList.objects.filter(user=user, recipe_id=pk).exists():
+                ShopList.objects.get(user=user, recipe_id=pk).delete()
                 return Response(status=status.HTTP_204_NO_CONTENT)
             return Response(
                 {'errors': 'Данный рецепт уже удален из списка покупок'},
@@ -115,34 +116,34 @@ class FavoriteViewSet(viewsets.ModelViewSet):
 
 
 @api_view(['GET', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def subscribe(request, pk):
     user = request.user
-    following = User(id=pk)
     if request.method == 'GET':
-        if user == following:
+        if user.id == pk:
             return Response({
                 'errors': 'Нельзя подписаться на самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
-        if Follow.objects.filter(user=user, following=following).exists():
+        if Follow.objects.filter(user=user, following_id=pk).exists():
             return Response({
                 'errors': 'Вы уже подписаны на данного пользователя'
             }, status=status.HTTP_400_BAD_REQUEST)
         data = Follow.objects.get_or_create(
             user=user,
-            following=following
+            following_id=pk
         )
         results = FollowSerializer(data[0]).data
         return Response(results)
 
     if request.method == 'DELETE':
-        if user == following:
+        if user.id == pk:
             return Response({
                 'errors': 'Нельзя отписаться от самого себя'
             }, status=status.HTTP_400_BAD_REQUEST)
 
         follow_to_delete = Follow.objects.filter(
             user=user,
-            following=following
+            following_id=pk
         )
         if follow_to_delete.exists():
             follow_to_delete.delete()
