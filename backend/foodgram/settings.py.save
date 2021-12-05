@@ -1,19 +1,22 @@
 import os
+# from dotenv import load_dotenv
 from pathlib import Path
 
-import environ
+# load_dotenv()
 
+# env = environ.Env()
+# environ.Env.read_env()
 
-env = environ.Env()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# SECRET_KEY = ('django-insecure-sb%3+zsmt5&58' +
+# 
+              '*6qna)kuv_drk++vy!5lhnq-30wn(r@#9z5p1')
 
+# SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECRET_KEY = "fdghfdkghkfopesgjsdgjfdgh"
-SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 

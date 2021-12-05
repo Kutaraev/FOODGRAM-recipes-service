@@ -1,8 +1,10 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
-
-class MyUserManager(BaseUserManager):
+# Если оставить просто UserManager, то код не будет работать.
+# Как я понял это имя определяет специальный тип объектов, отличных от обычных объектов,
+# и поэтому если оставить UserManager, то строка "objects = UserManager()" - не заработает. 
+class CustomUserManager(BaseUserManager):
     """Менеджер пользователей"""
     def create_user(self,
                     email,
@@ -75,7 +77,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]
 
-    objects = MyUserManager()
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.email
