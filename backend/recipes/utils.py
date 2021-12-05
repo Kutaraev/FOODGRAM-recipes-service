@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfgen import canvas
 
-from .models import Amount, ShopList
+from .models import Amount
 
 
 def from_cart_to_pdf(user):
@@ -75,15 +75,14 @@ def from_cart_to_pdf(user):
     list_counter = 1
     for ingredient in shopping_basket:
         canvas_page.drawString(60, y_coord, text=(
-            f'{list_counter}. {ingredient["ingredient__name"]} - {ingredient["amount"]} '
+            f'{list_counter}. {ingredient["ingredient__name"]} - '
+            f'{ingredient["amount"]} '
             f'{ingredient["ingredient__measurement_unit"]}'
         ))
         y_coord -= 30
-        list_counter +=1
+        list_counter += 1
     canvas_page.showPage()
     canvas_page.save()
-
-
     pdf = buffer.getvalue()
     buffer.close()
     response.write(pdf)
