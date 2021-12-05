@@ -11,14 +11,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 
-
-# SECRET_KEY = "fdghfdkghkfopesgjsdgjfdgh"
 SECRET_KEY = env('SECRET_KEY')
 
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['web', '84.201.138.107',]
+ALLOWED_HOSTS = ['web', '84.201.138.107', ]
 
 
 AUTH_USER_MODEL = 'users.User'
@@ -72,10 +69,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
-# DATABASES = {
-#     'default': env.db()
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -85,7 +78,7 @@ DATABASES = {
         'HOST': 'postgresql',
         'PORT': '5432',
     }
-} 
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [

@@ -1,9 +1,11 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 
+
 # Если оставить просто UserManager, то код не будет работать.
-# Как я понял это имя определяет специальный тип объектов, отличных от обычных объектов,
-# и поэтому если оставить UserManager, то строка "objects = UserManager()" - не заработает. 
+# Как я понял это имя определяет спец. тип объектов-менеджеров.
+# и поэтому если оставить UserManager,
+# то строка "objects = UserManager()" - не заработает.
 class CustomUserManager(BaseUserManager):
     """Менеджер пользователей"""
     def create_user(self,
