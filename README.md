@@ -27,7 +27,11 @@ http://84.201.138.107/recipes
     docker pull kutaraev/frontend:v1.0
     docker pull kutaraev/nginx:v1.0
 ```
-3. Запустить Docker-compose
+3. Создать переменную окружения .env со следющими значениями:
+   SECRET_KEY;
+   DATABASE_URL.
+
+4. Запустить Docker-compose
  ```
     docker docker-compose up
 ```
