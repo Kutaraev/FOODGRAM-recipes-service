@@ -1,18 +1,15 @@
 import os
 from pathlib import Path
 
-import environ
+from dotenv import load_dotenv
 
-env = environ.Env()
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-!muva3jc=a2p8mblp1!bpw-%b^u4u*p&mz16b-puo$aqlqj465')
 
-
-SECRET_KEY = env('SECRET_KEY')
-
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 ALLOWED_HOSTS = ['web', '84.201.138.107', ]
 
@@ -69,7 +66,15 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
 DATABASES = {
-    'default': env.db()
+    'default': {
+        'ENGINE': os.environ.get('DB_ENGINE',
+                                 default='django.db.backends.postgresql'),
+        'NAME': os.environ.get('DB_NAME'),
+        'USER': os.environ.get('POSTGRES_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('DB_HOST'),
+        'PORT': os.environ.get('DB_PORT'),
+    }
 }
 
 
