@@ -77,5 +77,5 @@ jobs:
             sudo docker pull kutaraev/food_frontend:latest
             sudo docker pull kutaraev/food_backend:latest
             sudo docker-compose stop
-            sudo docker-compose rm -f backend --build
+            sudo docker-compose rm -f backend
 
