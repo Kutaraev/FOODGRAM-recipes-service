@@ -1,13 +1,12 @@
 from djoser.serializers import UserSerializer
 from rest_framework import serializers
-
 from recipes.models import Follow
 from users.models import User
-
 
 class CustomUserSerializer(UserSerializer):
     """Сериализатор для пользователей"""
     is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ('email',
