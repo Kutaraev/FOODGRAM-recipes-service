@@ -1,7 +1,7 @@
-version: '3.8'
+version: '3.0'
 services:
 
-  postgresql:
+  postgres:
     image: postgres:12.4
     restart: always
     volumes:
@@ -11,19 +11,17 @@ services:
 
   backend:
     image: kutaraev/food_backend:latest
-    container_name: food_backend
     restart: always
     volumes:
-      - static_value:/code/static/
-      - media_value:/code/media/
+      - static_data:/code/static/
+      - media_data:/code/media/
     depends_on:
-      - postgresql
+      - postgres
     env_file:
       - ./.env
 
   frontend:
     image: kutaraev/food_frontend:latest
-    container_name: food_frontend
     volumes:
       - ../frontend/:/app/result_build/
     depends_on:
@@ -38,8 +36,8 @@ services:
       - ../frontend/build:/usr/share/nginx/html/
       - ../docs/redoc.html:/usr/share/nginx/html/api/docs/redoc.html
       - ../docs/openapi-schema.yml:/usr/share/nginx/html/api/docs/openapi-schema.yml
-      - static_value:/var/html/static/
-      - media_value:/var/html/media/
+      - static_data:/var/html/static/
+      - media_data:/var/html/media/
     restart: always
     depends_on:
       - frontend
@@ -47,6 +45,5 @@ services:
 
 volumes:
   postgres_data:
-  static_value:
-  media_value:
-
+  static_data:
+  media_data:
