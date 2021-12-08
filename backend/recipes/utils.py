@@ -1,5 +1,3 @@
-from io import BytesIO
-
 from django.db.models import Sum
 from django.http import HttpResponse
 from reportlab.pdfbase import pdfmetrics
@@ -23,8 +21,7 @@ def from_cart_to_pdf(user):
     response['Content-Disposition'] = (
         'attachment; filename="somefilename.pdf"')
 
-    buffer = BytesIO()
-    canvas_page = canvas.Canvas(buffer)
+    canvas_page = canvas.Canvas(filenane=response)
     fname = 'a010013l'
     facename = 'URWGothicL-Book'
     cyrface = pdfmetrics.EmbeddedType1Face(fname+'.afm', fname+'.pfb')
@@ -81,13 +78,11 @@ def from_cart_to_pdf(user):
             f'{ingredient["ingredient__measurement_unit"]}'
         ))
         y_coord -= 30
+        list_counter += 1
         if y_coord <= 40:
             canvas_page.showPage()
             is_page_done = True
     if not is_page_done:
         canvas_page.showPage()
     canvas_page.save()
-    pdf = buffer.getvalue()
-    buffer.close()
-    response.write(pdf)
     return response
