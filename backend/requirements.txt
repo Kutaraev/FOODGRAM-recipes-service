@@ -10,3 +10,4 @@ reportlab==3.6.2
 python-environ==0.4.54
 django-filter==21.1
 django-extra-fields==3.0.2
+python-dotenv==0.19.2
