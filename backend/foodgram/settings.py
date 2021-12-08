@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['web', '84.201.138.107', ]
+ALLOWED_HOSTS = ['backend', '84.201.138.107', ]
 
 
 AUTH_USER_MODEL = 'users.User'
