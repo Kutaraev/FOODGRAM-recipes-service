@@ -29,5 +29,5 @@ class RecipeFilter(filters.FilterSet):
         return queryset.all()
 
 
-class IngredientSearchFilter(SearchFilter):
+class IngredientFilter(SearchFilter):
     search_param = 'name'
