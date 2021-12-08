@@ -30,7 +30,8 @@ def from_cart_to_pdf(user):
             f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
             f'{ingr["ingredient__measurement_unit"]}'
         ))
-        height -= 30
+        # height -= 30
+        page.showPage()
     page.showPage()
     page.save()
     return response
