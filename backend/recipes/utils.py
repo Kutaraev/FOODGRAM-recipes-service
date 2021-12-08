@@ -21,7 +21,7 @@ def from_cart_to_pdf(user):
     response['Content-Disposition'] = (
         'attachment; filename="somefilename.pdf"')
 
-    canvas_page = canvas.Canvas(filenane=response)
+    canvas_page = canvas.Canvas(filename=response)
     fname = 'a010013l'
     facename = 'URWGothicL-Book'
     cyrface = pdfmetrics.EmbeddedType1Face(fname+'.afm', fname+'.pfb')
