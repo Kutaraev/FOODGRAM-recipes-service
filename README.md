@@ -1,6 +1,6 @@
 ![example workflow](https://github.com/Kutaraev/yamdb_final/actions/workflows/yamdb_workflow.yml/badge.svg)
 
-# Foodgram
+# Foodgram!
 Ваш продуктовый помощник
 ## Описание
 Данный проект представляет собой онлайн-сервис для публикации кулинарных рецептов и API для него.
