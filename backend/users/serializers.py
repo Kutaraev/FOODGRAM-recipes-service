@@ -25,6 +25,6 @@ class CustomUserSerializer(UserSerializer):
             user.save()
             return user
 
-        def get_is_subscribed(self, obj):
-            """Статус подписки пользователя"""
-            return False
+    def get_is_subscribed(self, obj):
+        """Статус подписки пользователя"""
+        return False
