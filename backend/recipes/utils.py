@@ -34,6 +34,7 @@ def from_cart_to_pdf(user):
         if height <= 30:
             page.showPage()
             page.setFont('DejaVuSerif', 16)
+            height = 760
     page.showPage()
     page.save()
     return response
