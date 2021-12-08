@@ -73,6 +73,7 @@ def from_cart_to_pdf(user):
     canvas_page.drawString(60, 800, 'Список покупок')
     y_coord = 760
     list_counter = 1
+    page_end_flag = False
     for ingredient in shopping_basket:
         canvas_page.drawString(60, y_coord, text=(
             f'{list_counter}. {ingredient["ingredient__name"]} - '
@@ -81,7 +82,11 @@ def from_cart_to_pdf(user):
         ))
         y_coord -= 30
         list_counter += 1
-    canvas_page.showPage()
+        if y_coord <= 30:
+            canvas_page.showPage()
+            page_end_flag = True
+    if not page_end_flag:
+        canvas.page.showPage()
     canvas_page.save()
     pdf = buffer.getvalue()
     buffer.close()
