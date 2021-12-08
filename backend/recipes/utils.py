@@ -7,7 +7,7 @@ from reportlab.pdfgen.canvas import Canvas
 from .models import Amount
 
 
-def generate_pdf_shopping_list(user):
+def from_cart_to_pdf(user):
     shopping_list = Amount.objects.filter(
         recipe__shoplist__user=user).values(
             'ingredient__name',
