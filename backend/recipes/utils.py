@@ -25,11 +25,14 @@ def from_cart_to_pdf(user):
     canvas_page.drawString(210, 800, 'Список покупок')
     canvas_page.setFont('DejaVuSerif', 16)
     y_coord = 760
-    for idx, ingr in enumerate(shopping_basket, start=1):
+    list_counter = 1
+    for ingredient in shopping_basket:
         canvas_page.drawString(60, y_coord, text=(
-            f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
-            f'{ingr["ingredient__measurement_unit"]}'
+            f'{list_counter}. {ingredient["ingredient__name"]} - '
+            f'{ingredient["amount"]} '
+            f'{ingredient["ingredient__measurement_unit"]}'
         ))
+        list_counter += 1
         y_coord -= 30
         if y_coord <= 30:
             canvas_page.showPage()
