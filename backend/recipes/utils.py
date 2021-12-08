@@ -82,9 +82,9 @@ def from_cart_to_pdf(user):
         ))
         y_coord -= 30
         if y_coord <= 40:
-            page.showPage()
+            canvas_page.showPage()
             is_page_done = True
     if not is_page_done:
-        page.showPage()
-    page.save()
+        canvas_page.showPage()
+    canvas_page.save()
     return response
