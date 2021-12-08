@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # bbbb дляя клонирования репозитория применён предустановленный action
+      # hbbbb дляя клонирования репозитория применён предустановленный action
     - uses: actions/checkout@v2
     - name: Set up Python
       # для установки Python-окружения
