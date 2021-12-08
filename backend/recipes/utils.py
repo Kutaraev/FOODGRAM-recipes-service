@@ -31,7 +31,7 @@ def from_cart_to_pdf(user):
             f'{ingr["ingredient__measurement_unit"]}'
         ))
         height -= 30
-        if height <=30:
+        if height <= 30:
             page.showPage()
             page.setFont('DejaVuSerif', 16)
     page.showPage()
