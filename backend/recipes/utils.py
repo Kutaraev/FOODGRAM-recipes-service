@@ -8,7 +8,7 @@ from .models import Amount
 
 
 def from_cart_to_pdf(user):
-    shopping_list = Amount.objects.filter(
+    shopping_basket = Amount.objects.filter(
         recipe__shoplist__user=user).values(
             'ingredient__name',
             'ingredient__measurement_unit'
@@ -20,21 +20,21 @@ def from_cart_to_pdf(user):
     pdfmetrics.registerFont(
         TTFont('DejaVuSerif', 'DejaVuSerif.ttf', 'UTF-8')
     )
-    page = Canvas(filename=response)
-    page.setFont('DejaVuSerif', 24)
-    page.drawString(210, 800, 'Список покупок')
-    page.setFont('DejaVuSerif', 16)
-    height = 760
-    for idx, ingr in enumerate(shopping_list, start=1):
-        page.drawString(60, height, text=(
+    canvas_page = Canvas(filename=response)
+    canvas_page.setFont('DejaVuSerif', 24)
+    canvas_page.drawString(210, 800, 'Список покупок')
+    canvas_page.setFont('DejaVuSerif', 16)
+    y_coord = 760
+    for idx, ingr in enumerate(shopping_basket, start=1):
+        canvas_page.drawString(60, y_coord, text=(
             f'{idx}. {ingr["ingredient__name"]} - {ingr["amount"]} '
             f'{ingr["ingredient__measurement_unit"]}'
         ))
-        height -= 30
-        if height <= 30:
-            page.showPage()
-            page.setFont('DejaVuSerif', 16)
-            height = 760
-    page.showPage()
-    page.save()
+        y_coord -= 30
+        if y_coord <= 30:
+            canvas_page.showPage()
+            canvas_page.setFont('DejaVuSerif', 16)
+            y_coord = 760
+    canvas_page.showPage()
+    canvas_page.save()
     return response
