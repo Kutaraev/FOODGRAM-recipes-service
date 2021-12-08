@@ -87,4 +87,7 @@ def from_cart_to_pdf(user):
     if not is_page_done:
         canvas_page.showPage()
     canvas_page.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
     return response
