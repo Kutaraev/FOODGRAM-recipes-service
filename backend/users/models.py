@@ -75,8 +75,6 @@ class User(AbstractBaseUser):
                                        verbose_name='Супер-пользователь')
     first_name = models.CharField(max_length=50, verbose_name='Имя')
     last_name = models.CharField(max_length=50, verbose_name='Фамилия')
-    is_subscribed = models.BooleanField(default=False,
-                                        verbose_name='Подписчик')
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', ]

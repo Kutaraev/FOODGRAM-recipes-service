@@ -27,7 +27,4 @@ class CustomUserSerializer(UserSerializer):
 
         def get_is_subscribed(self, obj):
             """Статус подписки пользователя"""
-            user = self.context.get('request').user
-            if user.is_anonymous:
-                return False
-            return Follow.objects.filter(user=user, following=obj.id).exists()
+            return False
